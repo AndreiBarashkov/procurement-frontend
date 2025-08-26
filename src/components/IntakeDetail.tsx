@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
     TextField,
     Typography,
@@ -27,14 +27,36 @@ const IntakeDetail: React.FC = () => {
     const isNew = id === undefined;
 
     const [intake, setIntake] = useState<Intake | null>(null);
+    const location = useLocation();
+    const importedIntake = location.state?.intake;
 
+    // useEffect(() => {
+    //     if (!isNew) {
+    //         fetchIntakeById(id!)
+    //             .then(res => setIntake(res.data))
+    //             .catch(err => console.error('Failed to fetch intake', err));
+    //     } else {
+    //         setIntake({
+    //             id: '',
+    //             requestorName: '',
+    //             title: '',
+    //             vendorName: '',
+    //             vatId: '',
+    //             commodityGroup: '',
+    //             department: '',
+    //             totalCost: 0,
+    //             status: 'Open',
+    //             orders: [emptyOrder],
+    //         });
+    //     }
+    // }, [id, isNew]);
     useEffect(() => {
         if (!isNew) {
             fetchIntakeById(id!)
                 .then(res => setIntake(res.data))
                 .catch(err => console.error('Failed to fetch intake', err));
         } else {
-            setIntake({
+            const newIntake: Intake = {
                 id: '',
                 requestorName: '',
                 title: '',
@@ -45,9 +67,12 @@ const IntakeDetail: React.FC = () => {
                 totalCost: 0,
                 status: 'Open',
                 orders: [emptyOrder],
-            });
+                ...importedIntake, // Spread imported values if available
+            };
+
+            setIntake(newIntake);
         }
-    }, [id, isNew]);
+    }, [id, isNew, importedIntake]);
 
     const handleChange = (field: keyof Intake, value: any) => {
         if (!intake) return;

@@ -20,3 +20,21 @@ export interface Intake {
     status: IntakeStatus;
     orders: Order[];
 }
+
+export interface OrderRequest {
+    description: string;
+    amount: number;
+    unit: string;
+    unitPrice: number;
+}
+
+export interface IntakeRequest {
+    requestorName: string;
+    title: string;
+    vendorName: string;
+    vatId: string;
+    commodityGroup: string;
+    department: string;
+    orders: OrderRequest[];
+}
+

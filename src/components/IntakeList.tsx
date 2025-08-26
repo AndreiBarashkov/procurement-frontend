@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchIntakes, submitIntake } from '../api/intakeApi'; // You must implement submitIntake in your API
+import {fetchIntakes, importIntakeFromPdf, submitIntake} from '../api/intakeApi'; // You must implement submitIntake in your API
 import { Intake } from '../models/Intake';
 import {
     Button,
@@ -25,8 +25,28 @@ const IntakeList: React.FC = () => {
             .catch(error => console.error('Failed to load intakes', error));
     }, []);
 
-    const handleImportPdf = () => {
-        alert('Mocked PDF import triggered.');
+    const handleImportPdf = async () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/pdf';
+
+        input.onchange = async () => {
+            const file = input.files?.[0];
+            if (!file) return;
+
+            try {
+                const response = await importIntakeFromPdf(file);
+                const intakeData = response.data;
+
+                // Navigate to intake creation page with imported data
+                navigate('/intakes/new', { state: { intake: intakeData } });
+            } catch (error) {
+                console.error('PDF import failed:', error);
+                alert('Failed to import intake from PDF. Please check the file or try again.');
+            }
+        };
+
+        input.click(); // Trigger file picker
     };
 
     const handleSubmitIntake = async (id: string) => {

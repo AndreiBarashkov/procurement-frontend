@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Intake } from '../models/Intake';
+import {Intake, IntakeRequest} from '../models/Intake';
 
 const API_BASE = '/intake';
 
@@ -11,4 +11,14 @@ export const updateIntake = (data: Intake) => {
 };
 export const submitIntake = (id: string) => {
     return axios.post(`${API_BASE}/${id}/submit`);
+};
+export const importIntakeFromPdf = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return axios.post<IntakeRequest>(`${API_BASE}/import-pdf`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
 };
